@@ -157,10 +157,14 @@ fun! TriggerSnippet()
 
 	if pumvisible() " Update snippet if completion is used, or deal with supertab
 		if exists('SuperTabKey')
-			call feedkeys(SuperTabKey) | return ''
+			let col = col('.') - 1
+			if !col || getline('.')[col - 1] !~ '\k'
+				call feedkeys("\<esc>a", 'n') " Close completion menu
+				call feedkeys("\<tab>") | return ''
+			else
+				call feedkeys(SuperTabKey) | return ''
+			endif
 		endif
-		call feedkeys("\<esc>a", 'n') " Close completion menu
-		call feedkeys("\<tab>") | return ''
 	endif
 
 	if exists('g:snipPos') | return snipMate#jumpTabStop(0) | endif
@@ -178,8 +182,12 @@ fun! TriggerSnippet()
 	endfor
 
 	if exists('SuperTabKey')
-		call feedkeys(SuperTabKey)
-		return ''
+		let col = col('.') - 1
+		if !col || getline('.')[col - 1] !~ '\k'
+			return "\<tab>"
+		else
+			call feedkeys(SuperTabKey) | return ''
+		endif
 	endif
 	return "\<tab>"
 endf
@@ -195,8 +203,12 @@ fun! BackwardsSnippet()
 		endif
 	endif
 	if exists('SuperTabKey')
-		call feedkeys(SuperTabKey)
-		return ''
+		let col = col('.') - 1
+		if !col || getline('.')[col - 1] !~ '\k'
+			return "\<s-tab>"
+		else
+			call feedkeys(SuperTabKey) | return ''
+		endif
 	endif
 	return "\<s-tab>"
 endf
